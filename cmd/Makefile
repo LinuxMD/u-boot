@@ -11,6 +11,8 @@ obj-$(CONFIG_CMD_HELP) += help.o
 obj-y += panic.o
 obj-y += version.o
 
+obj-y += everdrive.o
+
 # command
 obj-$(CONFIG_CMD_ARMFFA) += armffa.o
 obj-$(CONFIG_CMD_2048) += 2048.o
