@@ -14,53 +14,7 @@
 
 #include <linux/delay.h>
 
-struct __attribute__((packed)) everdrive_cmd {
-	uint8_t preamble;
-	uint8_t _preable;
-	uint8_t cmd;
-	uint8_t _cmd;
-};
-
-#define CMD_PREAMBLE	'+'
-#define CMD_STATUS	0x10
-#define CMD_USB_WRITE	0x22
-#define CMD_FIFO_WRITE	0x23
-#define DEFINECMD(_cmd) { CMD_PREAMBLE, ~CMD_PREAMBLE, _cmd, ~_cmd };
-static const struct everdrive_cmd cmd_status = DEFINECMD(CMD_STATUS);
-static const struct everdrive_cmd cmd_usbwr = DEFINECMD(CMD_USB_WRITE);
-
-#define FIFO_CPU_RXF BIT(15)
-#define FIFO_RXF_MSK 0x7FF
-
-static inline void fifo_write(void *fifo, const u8 *src, unsigned int len)
-{
-	int i;
-
-	for (i = 0; i < len; i++)
-		writew(src[i], fifo);
-}
-
-static inline void fifo_read(void *fifo, u8 *dst, unsigned int len)
-{
-	int i;
-
-	for (i = 0; i < len; i++) {
-		while (!(readw(fifo + 2) & FIFO_RXF_MSK)) {
-			/* spin until there is something to read */
-		}
-		dst[i] = readw(fifo);
-	}
-}
-
-static inline void read_status(void *fifo)
-{
-	uint16_t status;
-
-	fifo_write(fifo, (u8*) &cmd_status, sizeof(cmd_status));
-	fifo_read(fifo, (u8*) &status, sizeof(status));
-
-	printf("status; 0x%04x\n", (unsigned) status);
-}
+#include <everdrive-fifo.h>
 
 struct serial_everdrive_priv {
 	void __iomem *base;
@@ -72,7 +26,7 @@ static int serial_everdrive_getc(struct udevice *dev)
 	uint8_t ch;
 	uint16_t status;
 
-	fifo_read(priv->base, &ch, 1);
+	everdrive_fifo_read(priv->base, &ch, 1);
 
 	return ch;
 }
@@ -81,9 +35,9 @@ static void _serial_everdrive_putc(void *fifo, const unsigned char ch)
 {
 	uint16_t len = 1;
 
-	fifo_write(fifo, (u8*) &cmd_usbwr, sizeof(cmd_usbwr));
-	fifo_write(fifo, (u8*) &len, sizeof(len));
-	fifo_write(fifo, (u8*) &ch, sizeof(ch));
+	everdrive_fifo_write(fifo, (u8*) &cmd_usbwr, sizeof(cmd_usbwr));
+	everdrive_fifo_write(fifo, (u8*) &len, sizeof(len));
+	everdrive_fifo_write(fifo, (u8*) &ch, sizeof(ch));
 }
 
 static int serial_everdrive_putc(struct udevice *dev, const unsigned char ch)
