@@ -29,6 +29,14 @@
 		compatible = "krikzz,everdrive-serial";
 		reg = <0xa130d0 0x4>;
 		u-boot,dm-pre-reloc;
+		everdrive,fifo = <&fifo>;
+		status = "okay";
+	};
+
+	fifo: edfifo@0xa130d0 {
+		compatible = "krikzz,everdrive-fifo";
+		reg = <0xa130d0 0x4>;
+		u-boot,dm-pre-reloc;
 		status = "okay";
 	};
 

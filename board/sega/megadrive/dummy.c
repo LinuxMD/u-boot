@@ -56,6 +56,14 @@ int board_fix_fdt(void *fdt)
 
 int board_early_init_r(void)
 {
+        struct udevice *fifodev;
+        int node, ret;
+
+        node = fdt_node_offset_by_compatible(gd->fdt_blob, -1, "krikzz,everdrive-fifo");
+        ret = uclass_get_device_by_of_offset(UCLASS_MISC, node, &fifodev);
+        if (ret)
+                return ret;
+
 	return 0;
 }
 

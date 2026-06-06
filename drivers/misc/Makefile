@@ -3,6 +3,8 @@
 # (C) Copyright 2000-2007
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 
+obj-y += everdrive-fifo.o
+
 obj-$(CONFIG_$(PHASE_)MISC) += misc-uclass.o
 obj-$(CONFIG_$(PHASE_)NVMEM) += nvmem.o
 
