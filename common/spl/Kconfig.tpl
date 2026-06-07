@@ -336,6 +336,7 @@ config TPL_DM_SPI_FLASH
 config TPL_YMODEM_SUPPORT
 	bool "Support loading using Ymodem"
 	depends on TPL_SERIAL
+	select YMODEM
 	help
 	  While loading from serial is slow it can be a useful backup when
 	  there is no other option. The Ymodem protocol provides a reliable

@@ -1274,3 +1274,9 @@ config IO_TRACE
 	  confirm that the driver behaves the same way before and after a code
 	  change. To add support for your architecture, add '#include
 	  <iotrace.h>' to the bottom of arch/<arch>/include/asm/io.h and test.
+
+config YMODEM
+	bool
+	select CRC16
+	help
+	  Enable xyzModem library code

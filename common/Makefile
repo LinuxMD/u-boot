@@ -99,8 +99,7 @@ obj-$(CONFIG_$(PHASE_)LOG) += log.o
 obj-$(CONFIG_$(PHASE_)LOG_CONSOLE) += log_console.o
 obj-$(CONFIG_$(PHASE_)LOG_SYSLOG) += log_syslog.o
 obj-y += s_record.o
-obj-$(CONFIG_CMD_LOADB) += xyzModem.o
-obj-$(CONFIG_$(PHASE_)YMODEM_SUPPORT) += xyzModem.o
+obj-$(CONFIG_YMODEM) += xyzModem.o
 
 obj-$(CONFIG_$(PHASE_)AVB_VERIFY) += avb_verify.o
 obj-$(CONFIG_$(PHASE_)STACKPROTECTOR) += stackprot.o
