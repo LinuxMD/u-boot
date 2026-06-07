@@ -149,16 +149,19 @@ static int everdrive_disk_ls(int argc, char *const argv[])
 	return CMD_RET_SUCCESS;
 }
 
-static int everdrive_file_load_block(void)
+static const uint32_t everdrive_file_load_blksz = 512;
+
+static int everdrive_file_read(void *dst, uint32_t amount)
 {
-	const uint32_t blocksz = 512;
-	uint8_t buf[blocksz];
 	uint8_t resp;
 
+	if (amount > everdrive_file_load_blksz)
+		return -EINVAL;
+
 	everdrive_fifo_sendcmd(fifo, &everdrive_fifo_cmd_disk_f_frd);
-	everdrive_fifo_write_u32(fifo, blocksz);
+	everdrive_fifo_write_u32(fifo, amount);
 	everdrive_fifo_read_u8(fifo, &resp);
-	everdrive_fifo_read(fifo, buf, sizeof(buf));
+	everdrive_fifo_read(fifo, dst, amount);
 
 	return 0;
 }
@@ -184,6 +187,14 @@ static int everdrive_file_open(const unsigned char* path, uint8_t mode)
 	return 0;
 }
 
+static int everdrive_file_close(void)
+{
+	everdrive_fifo_sendcmd(fifo, &everdrive_fifo_cmd_disk_f_fclose);
+	everdrive_fifo_read_status(fifo);
+
+	return 0;
+}
+
 static int everdrive_disk_load(int argc, char *const argv[])
 {
 	const char *addr_str = argv[0];
@@ -198,16 +209,25 @@ static int everdrive_disk_load(int argc, char *const argv[])
 		return CMD_RET_FAILURE;
 	}
 
-	/* TODO: open <filename> from the EverDrive filesystem and copy
-	 *       its contents to physical address <addr>.               */
-//	printf("everdrive disk load: addr=0x%08lx file='%s' (not yet implemented)\n",
-//	       addr, filename);
-
 	everdrive_file_open(filename, EVERDRIVE_FILE_MODE_READ);
 	everdrive_file_available(&size);
 
-
 	printf("file size %llu\n", size);
+	/* TODO: check we can actually load everything, assuming we don't care about +2GB issues for now */
+
+	unsigned int loadpos;
+	unsigned int loadsz = size;
+	void *dst = (void *) addr;
+	for (loadpos = 0; loadpos < loadsz; loadpos += everdrive_file_load_blksz) {
+		unsigned int sz = min(loadsz - loadpos, everdrive_file_load_blksz);
+
+		everdrive_file_read(dst, sz);
+		dst += sz;
+
+		printf("file read %u\n", sz);
+	}
+
+	everdrive_file_close();
 
 	return CMD_RET_SUCCESS;
 }
