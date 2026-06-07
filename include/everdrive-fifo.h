@@ -67,6 +67,23 @@ static const struct everdrive_fifo_cmd everdrive_fifo_cmd_disk_f_dir_size =
 		EVERDRIVE_FIFO_DEFINECMD(EVERDRIVE_FIFO_CMD_F_DIR_SIZE);
 static const struct everdrive_fifo_cmd everdrive_fifo_cmd_disk_f_dir_get =
 		EVERDRIVE_FIFO_DEFINECMD(EVERDRIVE_FIFO_CMD_F_DIR_GET);
+static const struct everdrive_fifo_cmd everdrive_fifo_cmd_disk_f_fopen =
+		EVERDRIVE_FIFO_DEFINECMD(EVERDRIVE_FIFO_CMD_F_FOPN);
+
+#define	EVERDRIVE_FILE_MODE_READ		0x01
+#define	EVERDRIVE_FILE_MODE_WRITE		0x02
+#define	EVERDRIVE_FILE_MODE_OPEN_EXISTING	0x00
+#define	EVERDRIVE_FILE_MODE_CREATE_NEW		0x04
+#define	EVERDRIVE_FILE_MODE_CREATE_ALWAYS	0x08
+#define	EVERDRIVE_FILE_MODE_OPEN_ALWAYS		0x10
+#define	EVERDRIVE_FILE_MODE_OPEN_APPEND		0x30
+
+static const struct everdrive_fifo_cmd everdrive_fifo_cmd_disk_f_frd =
+		EVERDRIVE_FIFO_DEFINECMD(EVERDRIVE_FIFO_CMD_F_FRD);
+static const struct everdrive_fifo_cmd everdrive_fifo_cmd_disk_f_fclose =
+		EVERDRIVE_FIFO_DEFINECMD(EVERDRIVE_FIFO_CMD_F_FCLOSE);
+static const struct everdrive_fifo_cmd everdrive_fifo_cmd_disk_f_avb =
+		EVERDRIVE_FIFO_DEFINECMD(EVERDRIVE_FIFO_CMD_F_AVB);
 
 #define FIFO_CPU_RXF BIT(15)
 #define FIFO_RXF_MSK 0x7FF
@@ -91,6 +108,19 @@ static inline void everdrive_fifo_write_u16(void *fifo, u16 value)
 	uint16_t tmp = value;
 
 	everdrive_fifo_write(fifo, (void *) &tmp, sizeof(tmp));
+}
+
+static inline void everdrive_fifo_write_u32(void *fifo, u32 value)
+{
+	uint32_t tmp = value;
+
+	everdrive_fifo_write(fifo, (void *) &tmp, sizeof(tmp));
+}
+
+static inline void everdrive_fifo_write_str(void *fifo, const unsigned char *str, size_t len)
+{
+	everdrive_fifo_write_u16(fifo, len);
+	everdrive_fifo_write(fifo, (void *) str, len);
 }
 
 static inline void everdrive_fifo_read(void *fifo, u8 *dst, unsigned int len)
@@ -130,6 +160,17 @@ static inline int everdrive_fifo_read_u16(void *fifo, uint16_t *value)
 static inline int everdrive_fifo_read_u32(void *fifo, uint32_t *value)
 {
 	uint32_t tmp;
+
+	everdrive_fifo_read(fifo, (void *) &tmp, sizeof(tmp));
+
+	*value = tmp;
+
+	return 0;
+}
+
+static inline int everdrive_fifo_read_u64(void *fifo, uint64_t *value)
+{
+	uint64_t tmp;
 
 	everdrive_fifo_read(fifo, (void *) &tmp, sizeof(tmp));
 
