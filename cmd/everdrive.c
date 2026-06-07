@@ -126,8 +126,7 @@ static int everdrive_dir_ld(const char *path)
 
 	everdrive_fifo_sendcmd(fifo, &everdrive_fifo_cmd_disk_f_dir_ld);
 	everdrive_fifo_write_u8(fifo, args);
-	everdrive_fifo_write_u16(fifo, pathlen);
-	everdrive_fifo_write(fifo, path, pathlen);
+	everdrive_fifo_write_str(fifo, path, pathlen);
 	everdrive_fifo_read_status(fifo);
 
 	return 0;
@@ -150,11 +149,47 @@ static int everdrive_disk_ls(int argc, char *const argv[])
 	return CMD_RET_SUCCESS;
 }
 
+static int everdrive_file_load_block(void)
+{
+	const uint32_t blocksz = 512;
+	uint8_t buf[blocksz];
+	uint8_t resp;
+
+	everdrive_fifo_sendcmd(fifo, &everdrive_fifo_cmd_disk_f_frd);
+	everdrive_fifo_write_u32(fifo, blocksz);
+	everdrive_fifo_read_u8(fifo, &resp);
+	everdrive_fifo_read(fifo, buf, sizeof(buf));
+
+	return 0;
+}
+
+static int everdrive_file_available(uint64_t *result)
+{
+	everdrive_fifo_sendcmd(fifo, &everdrive_fifo_cmd_disk_f_avb);
+	everdrive_fifo_read_u64(fifo, result);
+
+	return 0;
+}
+
+static int everdrive_file_open(const unsigned char* path, uint8_t mode)
+{
+	size_t pathlen = strlen(path);
+
+	everdrive_fifo_sendcmd(fifo, &everdrive_fifo_cmd_disk_f_fopen);
+	everdrive_fifo_write_u8(fifo, mode);
+	everdrive_fifo_write_str(fifo, path, pathlen);
+
+	everdrive_fifo_read_status(fifo);
+
+	return 0;
+}
+
 static int everdrive_disk_load(int argc, char *const argv[])
 {
 	const char *addr_str = argv[0];
 	const char *filename  = argv[1];
 	unsigned long addr;
+	uint64_t size;
 	char *endp;
 
 	addr = simple_strtoul(addr_str, &endp, 16);
@@ -165,8 +200,15 @@ static int everdrive_disk_load(int argc, char *const argv[])
 
 	/* TODO: open <filename> from the EverDrive filesystem and copy
 	 *       its contents to physical address <addr>.               */
-	printf("everdrive disk load: addr=0x%08lx file='%s' (not yet implemented)\n",
-	       addr, filename);
+//	printf("everdrive disk load: addr=0x%08lx file='%s' (not yet implemented)\n",
+//	       addr, filename);
+
+	everdrive_file_open(filename, EVERDRIVE_FILE_MODE_READ);
+	everdrive_file_available(&size);
+
+
+	printf("file size %llu\n", size);
+
 	return CMD_RET_SUCCESS;
 }
 
