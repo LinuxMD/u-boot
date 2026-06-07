@@ -212,7 +212,7 @@ static int everdrive_disk_load(int argc, char *const argv[])
 	everdrive_file_open(filename, EVERDRIVE_FILE_MODE_READ);
 	everdrive_file_available(&size);
 
-	printf("file size %llu\n", size);
+	printf("Loading %s, %llu bytes\n", filename, size);
 	/* TODO: check we can actually load everything, assuming we don't care about +2GB issues for now */
 
 	unsigned int loadpos;
@@ -223,11 +223,11 @@ static int everdrive_disk_load(int argc, char *const argv[])
 
 		everdrive_file_read(dst, sz);
 		dst += sz;
-
-		printf("file read %u\n", sz);
 	}
 
 	everdrive_file_close();
+
+	printf("Done\n");
 
 	return CMD_RET_SUCCESS;
 }
