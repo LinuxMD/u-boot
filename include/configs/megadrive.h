@@ -7,10 +7,9 @@
  */
 #define CFG_SYS_INIT_RAM_SIZE 0x380000
 
-//		"bootcmd=mmc rescan; fatload mmc 0:1 0x400 vmlinux.mc68ez328.lz4;"
-//		"unlz4 0x400 0x400000 0x300000; bootelf 0x400000\0"
-
 #define CFG_EXTRA_ENV_SETTINGS \
+		"bootcmd=everdrive disk init; everdrive disk load 0x180000 vmlinux.lz4;" \
+		"unlz4 0x180000 0x1000 0x180000\0" \
 		"stdout=serial,vidconsole\0" \
 		"autostart=yes\0" \
-		"bootargs=earlycon=mc68ez328,0xfffff900 console=ttyDB0 init=/root/init root=/dev/mmcblk0p2 rootfstype=squashfs rootwait\0"
+		"bootargs=earlycon=xxx\0"
