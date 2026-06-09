@@ -33,9 +33,10 @@ void cpu_init_f(void)
 size_t bootinfo_memsz_f(void);
 int dram_init(void)
 {
-	/* Correct size will be in the DT but this is still too early. */
-	//gd->ram_size = bootinfo_memsz_f();
-	gd->ram_size = 0x300000;
+	/* Correct size will be in the DT but this is still too early.
+	 * And we use the top 256KB to map that backup memory.
+	 */
+	gd->ram_size = 0x3C0000;
 
 	return 0;
 }
