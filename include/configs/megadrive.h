@@ -13,4 +13,4 @@
 		"bootelf 0x180000\0" \
 		"stdout=serial,vidconsole\0" \
 		"autostart=yes\0" \
-		"bootargs=earlycon=xxx\0"
+		"bootargs=earlyprintk\0"
