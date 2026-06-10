@@ -52,6 +52,8 @@
 			compatible = "krikzz,everdrive-timer";
 			reg = <0xa130d6 0x2>;
 			u-boot,dm-pre-reloc;
+			/* We need an interrupt to make the kernel move, use the VDP vblank */
+			interrupts-extended = <&intc_vect 5>;
 			status = "okay";
 		};
 	//};

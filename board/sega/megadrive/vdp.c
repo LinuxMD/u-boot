@@ -22,8 +22,10 @@
 
 #define VDP_REG_MODE1			0x00
 #define VDP_MODE1_M4			BIT(2)
+#define VDP_MODE1_IE0			BIT(4)
 #define VDP_REG_MODE2			0x01
 #define VDP_MODE2_M5			BIT(2)
+#define VDP_MODE2_IE1			BIT(5)
 #define VDP_MODE2_DE			BIT(6)
 #define VDP_REG_PLANE_A_ADDR		0x02
 #define VDP_REG_WINDOW_ADDR		0x03
