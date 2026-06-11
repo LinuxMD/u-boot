@@ -8,9 +8,10 @@
 #define CFG_SYS_INIT_RAM_SIZE 0x380000
 
 #define CFG_EXTRA_ENV_SETTINGS \
-		"bootcmd=everdrive disk init; everdrive disk load 0x1000 vmlinux.lz4;" \
+		"bootcmd=everdrive disk init;" \
+		"everdrive disk load 0x1000 vmlinux.lz4;" \
 		"unlz4 0x1000 0x180000 0x180000;" \
 		"bootelf 0x180000\0" \
 		"stdout=serial,vidconsole\0" \
 		"autostart=yes\0" \
-		"bootargs=earlyprintk\0"
+		"bootargs=earlyprintk root=/dev/edblk\0"
