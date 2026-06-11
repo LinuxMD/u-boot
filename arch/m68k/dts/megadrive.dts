@@ -44,6 +44,7 @@
 		compatible = "sega,megadrive-vdp";
 		reg = <0xc00000 0x8>;
 		u-boot,dm-pre-reloc;
+		interrupts-extended = <&intc_vect 3>;
 		status = "okay";
 	};
 
@@ -57,4 +58,10 @@
 			status = "okay";
 		};
 	//};
+
+	edblk0: everdrive-blk@0 {
+		compatible = "krikzz,everdrive-blk";
+		filename = "m68k.erofs";
+		status = "okay";
+	};
 };
