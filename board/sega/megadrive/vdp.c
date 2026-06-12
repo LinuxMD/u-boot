@@ -18,7 +18,7 @@
 #define VDP_CTRL_CD2	BIT(4)
 #define VDP_CTRL_CD3	BIT(5)
 #define VDP_CTRL_CD4	BIT(6)
-#define VDP_CTRL_CD5	BIT(7))
+#define VDP_CTRL_CD5	BIT(7)
 
 #define VDP_REG_MODE1			0x00
 #define VDP_MODE1_M4			BIT(2)
