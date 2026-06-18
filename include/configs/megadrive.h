@@ -11,7 +11,7 @@
 		"bootcmd=everdrive disk init;" \
 		"everdrive disk load 0x1000 vmlinux.lz4;" \
 		"unlz4 0x1000 0x180000 0x180000;" \
-		"bootelf 0x180000\0" \
+		"bootelf -p 0x180000\0" \
 		"stdout=serial,vidconsole\0" \
 		"autostart=yes\0" \
-		"bootargs=earlyprintk root=/dev/edblk console=ttyVDP0 console=ttyED0 -- smolinit.getty=/dev/ttyED0 smolinit.hostname=md\0"
+		"bootargs=earlyprintk console=ttyVDP0 console=ttyED0 root=/dev/edblk -- smolinit.getty=/dev/ttyED0 smolinit.hostname=md\0"
