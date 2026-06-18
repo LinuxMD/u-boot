@@ -14,4 +14,4 @@
 		"bootelf -p 0x180000\0" \
 		"stdout=serial,vidconsole\0" \
 		"autostart=yes\0" \
-		"bootargs=earlyprintk console=ttyVDP0 console=ttyED0 root=/dev/edblk -- smolinit.getty=/dev/ttyED0 smolinit.hostname=md\0"
+		"bootargs=earlyprintk console=ttyVDP0 console=ttyED0 root=/dev/edblk -- smolinit.getty=/dev/ttyED0 smolinit.getty=/dev/ttyVDP0 smolinit.hostname=md\0"
