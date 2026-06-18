@@ -13,6 +13,63 @@
 
 static char vdp_console_cache[VDP_PLANE_AB_HEIGHT][VDP_PLANE_AB_WIDTH] = { 0 };
 
+/* Tiles go in the free region between the font (0x0000-0x1FFF) and
+ * VRAM_WINDOW (0xB000); the sprite table is at its canonical address. */
+#define LOGO_TILE_VRAM   0x2000
+#define LOGO_TILE_INDEX  (LOGO_TILE_VRAM / 32)   /* 0x100 */
+
+static inline void vdp_ctrl(u16 v) { *VDP_CTRL_PORT = v; }
+static inline void vdp_data(u16 v) { *VDP_DATA_PORT = v; }
+
+static inline void vdp_set_reg(u8 reg, u8 val)
+{
+	vdp_ctrl(0x8000 | (reg << 8) | val);
+}
+
+static void vdp_set_addr(u8 code, u16 addr)
+{
+	vdp_ctrl((u16)((code & 0x03) << 14) | (addr & 0x3FFF));
+	vdp_ctrl((u16)((code & 0x3C) << 2) | ((addr >> 14) & 0x03));
+}
+
+/* One 32x32 solid-blue sprite in the top-left corner. */
+static void vdp_setup_logo_sprite(void)
+{
+	int i;
+
+	vdp_set_reg(15, 2);             /* auto-increment by 2 */
+
+	/* Blue into palette line 1, colour 1 (CRAM index 17) */
+	vdp_set_addr(VDP_CD_CRAM_WR, 17 * 2);
+	vdp_data(0x0E00);
+
+	/* 16 tiles (4x4), every pixel = colour index 1 */
+	vdp_set_addr(VDP_CD_VRAM_WR, LOGO_TILE_VRAM);
+	for (i = 0; i < 16 * 16; i++)   /* 16 tiles * 16 words */
+		vdp_data(0x1111);
+
+	/* Sprite attribute table: a single sprite at (128,128) = screen 0,0 */
+	vdp_set_addr(VDP_CD_VRAM_WR, VRAM_SPRITE_TABLE);
+	vdp_data(0x0080);               /* Y = 128 */
+	vdp_data(0x0F00);               /* size 4x4 tiles, link 0 */
+	vdp_data(0xA000 | LOGO_TILE_INDEX); /* priority, palette 1, tile */
+	vdp_data(0x0080);               /* X = 128 */
+
+	vdp_set_reg(5, VRAM_SPRITE_TABLE >> 9);
+}
+
+static int vdp_console_probe(struct udevice *dev)
+{
+	int ret = console_probe(dev);
+
+	if (ret)
+		return ret;
+
+	vdp_setup_logo_sprite();
+
+	return 0;
+}
+
 static int console_set_row(struct udevice *dev, uint row, int clr)
 {
 	//printf("%s:%d\n", __func__, __LINE__);
@@ -94,6 +151,6 @@ U_BOOT_DRIVER(vidconsole_vdp) = {
 	.name		= "vdp_console",
 	.id		= UCLASS_VIDEO_CONSOLE,
 	.ops		= &console_ops,
-	.probe		= console_probe,
+	.probe		= vdp_console_probe,
 	.priv_auto	= sizeof(struct console_simple_priv),
 };
