@@ -1034,6 +1034,7 @@ endif
 config CMD_SHA1SUM
 	bool "sha1sum"
 	select SHA1
+	select HASH
 	help
 	  Compute SHA1 checksum.
 
