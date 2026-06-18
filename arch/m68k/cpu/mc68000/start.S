@@ -227,7 +227,8 @@ ___xxx__:
 	move.w #0x0005, MEGADRIVE_EVERDRIVE_MAPPER_CTRL5
 	move.w #0x0006, MEGADRIVE_EVERDRIVE_MAPPER_CTRL6
 	/* Map in the save SRAM to the last bank for the environment */
-	move.w #0x001f, MEGADRIVE_EVERDRIVE_MAPPER_CTRL7
+	//move.w #0x001f, MEGADRIVE_EVERDRIVE_MAPPER_CTRL7
+	move.w #0x0007, MEGADRIVE_EVERDRIVE_MAPPER_CTRL7
 
 
 	__putch 'm'
